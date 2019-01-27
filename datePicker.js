@@ -108,28 +108,24 @@ function changeMonthView(getCurrentMonthVal){
 	}
 
 	creatingDatePickerHeading('datepickerContainer','15px');
-	var dateGrid = [];
 	var flag = 0, n = 1;
 
 	/*=-----------------------------------------------------------=*/
 	//Check for MonthStart Filling 
-	var lastMonthDays = getCurrentMonth.setMonth(getCurrentMonth.getMonth() - 1);
-	var nextMonthDays = getCurrentMonth.setMonth(getCurrentMonth.getMonth() + 2);
+	var lastMonthDays = new Date().setMonth(getCurrentMonth.getMonth() - 1);
+	var nextMonthDays = new Date().setMonth(getCurrentMonth.getMonth() + 2);
 
 	lastMonthDays = daysInThisMonth(new Date(lastMonthDays));
-	console.log(lastMonthDays,'Check for MonthStart Filling>>>>>>>>>>>>>>>>>>>>>>>',weekVal.indexOf((firstDay+1).split(' ')[0]));
+	nextMonthDays = daysInThisMonth(new Date(nextMonthDays));
+	//console.log(nextMonthDays,'<><><>nextMonthDays')
 
 	monthToStart = weekVal.indexOf((firstDay+1).split(' ')[0])
-
 	
-	// for(l=0;l<nextMonthDays;l++){
-		
-	// }
+	var counter = 1;
 	//Check for MonthEnd Filling 
 	/*=-----------------------------------------------------------=*/
 
-	for(i=0;i<5;i++){
-		dateGrid[i] = [];
+	for(i=0;i<6;i++){
 
 		var dayToStart = (firstDay+1).split(' ')[0];
 		var totalDays = daysInThisMonth(date);
@@ -141,18 +137,14 @@ function changeMonthView(getCurrentMonthVal){
 			var newNode = document.createElement('div');
 			newNode.className = 'col-sm-grid';			
 
-
 			//Pointing In Calendar in First Row from which day to Start
 			if( i == 0 && j == weekVal.indexOf(dayToStart)){
 				flag = 1;
 			}
 
 
-			
-
 			//Constructing the Date
 			if(flag == 1 && n <= totalDays){
-				dateGrid[i][j] = n;
 				newNode.innerHTML = n;
 
 
@@ -190,11 +182,15 @@ function changeMonthView(getCurrentMonthVal){
 
 				n++;
 			}else{
-				dateGrid[i][j] = ' ';
-				newNode.innerHTML = '';
+				if(monthToStart){
+					console.log(monthToStart,'monthToStart',lastMonthDays)
+					newNode.innerHTML = lastMonthDays - (monthToStart-1);
+					monthToStart--;
+				}else{
+					newNode.innerHTML = counter++;
+				}
 					
 			}
-
 
 			rowContainer.appendChild(newNode); 
 		}
@@ -204,7 +200,7 @@ function changeMonthView(getCurrentMonthVal){
 		// document.getElementById('datepickerContainer').style.height = "250px";
 	}
 
-	console.log('StartDay :-',firstDay,'\n LastDat :-',lastDay ,' \n ',dateGrid);
+	console.log('StartDay :-',firstDay,'\n LastDat :-',lastDay ,' \n ');
 
 }
 
@@ -282,5 +278,3 @@ function changeCalendarView(id){
 	}
 	//console.log(weekGrid)
 }
-
-
