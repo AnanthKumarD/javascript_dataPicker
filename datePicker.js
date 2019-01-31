@@ -8,27 +8,38 @@ var eventList = [
 		id : 1,
 		date : "01-01-2019",
 		val: "Break at Taj 234444444",
-		time: "12:30"
+		from_time: "12:30",
+		to_time: "13:30"
 	},{
 		id : 2,
-		date : "01-01-2019",
-		val: "Lunch at Oberoi"
+		date : "30-01-2019",
+		val: "Lunch at Oberoi",
+		from_time: "12:30",
+		to_time: "14:30"
 	},{
 		id : 3,
-		date : "02-01-2019",
-		val: "Lunch at Oberoi"
+		date : "30-01-2019",
+		val: "Lunch at Oberoi",
+		from_time: "1:30",
+		to_time: "14:30"
 	},{
 		id : 4,
 		date : "04-01-2019",
-		val: "Lunch at Oberoi"
+		val: "Lunch at Oberoi",
+		from_time: "12:30",
+		to_time: "15:30"
 	},{
 		id : 5,
 		date : "28-02-2019",
-		val: "Lunch at Oberoi"
+		val: "Lunch at Oberoi",
+		from_time: "12:30",
+		to_time: "16:30"
 	},{
 		id : 6,
 		date : "15-12-2018",
-		val: "Lunch at Oberoi"
+		val: "Lunch at Oberoi",
+		from_time: "12:30",
+		to_time: "17:30"
 	}
 ]
 
@@ -48,11 +59,12 @@ var getCurrentMonth = new Date();
     getCurrentMonth.setMonth( getCurrentMonth.getMonth());
 
 var weekVal = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-function creatingDatePickerHeading(containerData,cDataMargin){
+function creatingDatePickerHeading(containerData,cDataMargin,dateArr){
 	var creatingHeader = document.createElement('div');
 	for(i=0;i<weekVal.length;i++){
 		var creatingHeaderVal = document.createElement('span')
-		creatingHeaderVal.innerHTML = weekVal[i]
+		creatingHeaderVal.innerHTML = ( (dateArr != undefined ) ? weekVal[i]+'('+(dateArr[i].getDate())+')' : weekVal[i] ); 
+		
 		creatingHeaderVal.className = 'weak_heading'
 		creatingHeaderVal.style.margin = cDataMargin;
 		creatingHeader.appendChild(creatingHeaderVal);
@@ -125,7 +137,7 @@ function changeMonthView(getCurrentMonthVal){
 	//Check for MonthEnd Filling 
 	/*=-----------------------------------------------------------=*/
 
-	for(i=0;i<6;i++){
+	for(i=0;i<5;i++){
 
 		var dayToStart = (firstDay+1).split(' ')[0];
 		var totalDays = daysInThisMonth(date);
@@ -182,13 +194,18 @@ function changeMonthView(getCurrentMonthVal){
 
 				n++;
 			}else{
-				if(monthToStart){
-					console.log(monthToStart,'monthToStart',lastMonthDays)
-					newNode.innerHTML = lastMonthDays - (monthToStart-1);
-					monthToStart--;
-				}else{
-					newNode.innerHTML = counter++;
-				}
+				newNode.innerHTML = ''
+				// if(monthToStart){
+				// 	console.log(monthToStart,'monthToStart',lastMonthDays)
+				// 	newNode.id = (lastMonthDays - (monthToStart-1))+'_previous_month';
+				// 	newNode.innerHTML = lastMonthDays - (monthToStart-1);
+				// 	monthToStart--;
+				// }else{
+				// 	newNode.id = counter+'_next_month';
+				// 	newNode.innerHTML = counter;
+				// 	counter++;
+				// }
+				// newNode.addEventListener("click", this.handler.bind(this));
 					
 			}
 
@@ -211,6 +228,7 @@ function handler(event){
     document.getElementById(currentDate).style.background = 'white';
     document.getElementById(target.id).style.background = 'red';
 
+    document.getElementById("currentDate").innerHTML = target.id
     currentDate = target.id;
 }
 
@@ -218,16 +236,34 @@ function handler(event){
 
 /*
 
-var curr = new Date;
-var firstday = new Date(curr.setDate(curr.getDate() - curr.getDay()));
-var lastday = new Date(curr.setDate(curr.getDate() - curr.getDay()+6));
 
 
 */
 
+
+var getDateArray = function(start, end) {
+	    var arr = new Array();
+	    var dt = new Date(start);
+	    while (dt <= end) {
+	        arr.push(new Date(dt));
+	        dt.setDate(dt.getDate() + 1);
+	    }
+	    return arr;
+	}
+
+
 //monthViewContainer
 function changeCalendarView(id){
 	
+	var curr = new Date;
+	var firstday = new Date(curr.setDate(curr.getDate() - curr.getDay()));
+	var lastday = new Date(curr.setDate(curr.getDate() - curr.getDay()+6));
+	
+
+	var dateArr = getDateArray(firstday, lastday);
+	console.log(dateArr,'dateArr')
+
+
 	if(id == "monthView"){
 		changeMonthView(getCurrentMonth);
 	}else{
@@ -235,11 +271,11 @@ function changeCalendarView(id){
 		document.getElementById('datepickerContainer').innerHTML = '';
 		console.log(id);
 		if(id == "weekView"){
-			creatingDatePickerHeading('monthViewContainer','55px');
-			totalDataToDisplay = 7
+			creatingDatePickerHeading('monthViewContainer','30px',dateArr);
+			totalDataToDisplay = 8
 		}
 		if(id == "dayView"){
-			totalDataToDisplay = 1
+			totalDataToDisplay = 2
 		}
 		
 		var quarterHours = ["00","30"];
@@ -254,6 +290,7 @@ function changeCalendarView(id){
 			}
 		}
 
+
 		
 		for(i=0;i<totalDataToDisplay;i++){
 			var rowContainer = document.createElement('div');
@@ -263,14 +300,51 @@ function changeCalendarView(id){
 
 				var rowContainerList = document.createElement('li');
 				rowContainerList.className = 'weekly_view_list '+i
-				rowContainerList.innerHTML = times[j];
-				rowContainerList.style.width = (id == "dayView") ?  "800px" : "150px";
+				if(i == 0 ){
+					rowContainerList.innerHTML = times[j];	
+					rowContainerList.style.width = (id == "dayView") ?  "100px" : "100px";
+				}else{
+					rowContainerList.innerHTML = dateArr[i-1].getDate();
+					//rowContainerList.innerHTML = '';
+					rowContainerList.style.width = (id == "dayView") ?  "800px" : "100px";
 
+
+
+					var foundValue = eventList.filter(obj=>{
+						//This is for Creating an Event inside a calendar based on the Date Value
+						var dateVal = ('0' + dateArr[i-1].getDate()).slice(-2);
+						var monthVal = ('0' + (getCurrentMonth.getMonth()+1)).slice(-2);
+
+						var constructedDate = dateVal+'-'+monthVal+'-'+getCurrentMonth.getFullYear();
+						
+						if(obj.date === constructedDate.toString() && (obj.from_time == times[j] || obj.to_time == times[j]) ){
+							console.log(obj.from_time ,'==', times[j],'>>>>',obj.to_time)
+							var spanList = document.createElement('span');
+							var eventList = document.createElement('li');
+							eventList.id = obj.date;
+							eventList.innerHTML = obj.val;
+							eventList.className = "eventValue";
+							
+							// Pick a random colour of the array
+							var random_color = color_array[Math.floor(Math.random()*color_array.length)];
+							eventList.style.color = random_color;
+							//$(val).css("color",random_color);
+							spanList.appendChild(eventList)
+							rowContainerList.appendChild(spanList); 
+						}
+						
+					});
+				}
+				
 				if(j%2 == 1){
 					rowContainerList.style.borderBottom = '3px solid';
 				}else{
 					rowContainerList.style.borderBottom = '0.5px dotted';
 				}
+
+
+
+				
 				rowContainer.appendChild(rowContainerList); 
 			}
 			document.getElementById('monthViewContainer').appendChild(rowContainer); 
